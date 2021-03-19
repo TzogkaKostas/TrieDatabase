@@ -67,13 +67,13 @@ def read_keys_from_file(keyfile):
 
 	return keys
 
-def select_num_of_keys(mkeys):
+def select_random_num_of_keys(mkeys):
 	return choice(range(0, mkeys + 1))
 
 
 def get_random_pairs(args, keys, depth):
 	values = "{"
-	num_of_keys = select_num_of_keys(args.mkeys)
+	num_of_keys = select_random_num_of_keys(args.mkeys)
 
 	for i in range(num_of_keys):
 		values += get_random_pair(args, keys, depth)

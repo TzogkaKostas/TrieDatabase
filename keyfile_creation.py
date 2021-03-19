@@ -3,7 +3,7 @@ import sys
 
 import random_api as rd
 
-def getOptions(args=sys.argv[1:]):
+def get_args(args=sys.argv[1:]):
 	parser = argparse.ArgumentParser(description="Data Creation")
 
 	parser.add_argument("-n", "--nlines", type=int, default=10,
@@ -27,7 +27,7 @@ def get_random_lines(nlines):
 	return lines
 
 if __name__ == "__main__":
-	options = getOptions(sys.argv[1:])
+	options = get_args(sys.argv[1:])
 
 	data = get_random_lines(options.nlines)
 
