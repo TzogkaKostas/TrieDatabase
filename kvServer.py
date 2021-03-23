@@ -6,16 +6,33 @@ import arguments as args
 
 MAX_MESSAGE_SIZE = 2048
 
+def handle_PUT_request(conn, request_data):
+
+	conn.sendall(b'OK')
+
+def handle_request(conn, request):
+	request_name = request.split(" ")[0]
+	request_data = request.split(" ")[1]
+	if request_name == "PUT":
+		handle_PUT_request(conn, request_data)
+	elif request_name == "GET":
+		x = 1 + 1
+	elif request_name == "DELETE":
+		x = 2 + 2
+	elif request_name == "QUERY":
+		x = 3 + 3
+	else:
+		print("unkown command...")
+
 def handle_client(conn, addr):
 	print('Connected by', addr)
 
-	data = conn.recv(MAX_MESSAGE_SIZE)
-	if not data:
+	request = str(conn.recv(MAX_MESSAGE_SIZE))
+	if not request:
 		return
 
-	print(data)
-
-	conn.sendall(b'OK')
+	print(request)
+	handle_request(conn, request)
 
 def run_server(ip, port):
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

@@ -21,6 +21,9 @@ class Servers:
 	def get_k_random_servers(self, k):
 		return sample(self.servers, k)
 
+	def get_servers(self):
+		return self.servers
+
 	def print_servers(self):
 		for server in self.servers:
 			print(server.get_ip(), server.get_port())

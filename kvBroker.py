@@ -7,11 +7,14 @@ import servers
 
 k_servers = 1
 
+def as_bytes(data):
+	return bytes(data, "ascii")
+
 def send_recv_data_to_server(server, data):
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-	    s.connect((server.get_ip(), server.get_port()))
-	    s.sendall(bytes(data, "ascii"))
-	    received_data = s.recv(1024)
+		s.connect((server.get_ip(), server.get_port()))
+		s.sendall(as_bytes(data))
+		received_data = s.recv(1024)
 
 	return received_data
 
@@ -21,16 +24,67 @@ def get_data(data_file):
 	
 	return rows
 
-def send_data_to_k_servers(k_servers, row):
-	for server in k_servers:
-		response = send_recv_data_to_server(server, row)
-		print(response)
+def is_valid(response):
+	if response == "OK":
+		return True
+	else:
+		return False
 
-def send_data_to_servers(servers, data_file, kReplication):
+def send_data_to_k_servers(k_servers, data):
+	for server in k_servers:
+		response = send_recv_data_to_server(server, data)
+		if not is_valid(response):
+			print("response was valid!!")
+
+def index_data_to_servers(servers, data_file, kReplication):
 	rows = get_data(data_file)
 	for row in rows:
 		# k_servers = servers.get_k_random_servers(kReplication)
-		send_data_to_k_servers(k_servers, row)
+		send_data_to_k_servers(k_servers, "PUT " + row)
+
+def is_server_up(ip, port):
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	result = sock.connect_ex((ip, port))
+	if result == 0:
+		return True
+	else:
+		return False
+
+def are_k_server_down(servers, kReplication):
+	num_of_down_servers = 0
+	for server in servers:
+		if not is_server_up(server.get_ip(), server.get_port()):
+			num_of_down_servers += 1
+
+		if num_of_down_servers >= kReplication:
+			return True
+	
+	return False
+
+def handle_GET_command(command, servers, kReplication):
+	if are_k_server_down(servers, kReplication):
+		print("k or more servers are down and therefore it cannot guarantee "
+			"the correct output.")
+		return
+	
+	# k_servers = servers.get_k_random_servers(kReplication)
+	# send_data_to_k_servers(k_servers, command)
+
+def handle_user_input(user_input, servers, kReplication):
+	command_name = user_input.split(" ")[0]
+	if command_name == "GET":
+		handle_GET_command(user_input, servers, kReplication)
+	elif command_name == "DELETE":
+		x = 1 + 1
+	elif command_name == "QUERY":
+		x = 2 + 2
+	else:
+		print("unkown command...")
+
+def handle_user_inputs(servers, kReplication):
+	# while True:
+	user_input = input("KVcmd>")
+	handle_user_input(user_input, servers, kReplication)
 
 
 if __name__ == "__main__":
@@ -40,4 +94,6 @@ if __name__ == "__main__":
 
 	servers = servers.get_servers(args.serverFile)
 
-	send_data_to_servers(servers, args.dataToIndex, args.kFactor)
+	# index_data_to_servers(servers, args.dataToIndex, args.kFactor)
+
+	handle_user_inputs(k_servers, args.kFactor)
