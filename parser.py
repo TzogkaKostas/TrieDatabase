@@ -33,10 +33,7 @@ def parse_value(value):
 
 	pairs = []
 	for key in value_as_json:
-		value = value_as_json[key]
-		value = JSON_to_simpleKV(value)
-
-		key = "\"" + key + "\""
+		value = JSON_to_simpleKV(value_as_json[key])
 
 		pairs.append((key, value))
 

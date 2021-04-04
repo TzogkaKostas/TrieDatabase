@@ -3,6 +3,7 @@ import parser
 class Value:
 	def __init__(self, value):
 		self.raw_value = value
+		self.trie = None
 
 		if not parser.is_primitive_type(value):
 			self.trie = Trie()
@@ -17,6 +18,17 @@ class Value:
 		for (key, value) in pairs:
 			self.trie.put(key, value)
 
+	def find(self, key):
+		if not self.trie:
+			return None
+		
+		return self.trie._get_node(key)
+
+	def print(self):
+		if self.trie:
+			self.trie.print()
+		else:
+			print("#", self.raw_value, "#")
 
 
 class TrieNode:
@@ -42,6 +54,9 @@ class TrieNode:
 	def get_raw_value(self):
 		return self.value.get_raw_value()
 
+	def get_value(self):
+		return self.value
+
 	def set_value(self, value):
 		self.value = Value(value)
 
@@ -49,7 +64,7 @@ class TrieNode:
 		return self.child_nodes
 
 	def print_value(self, key, level):
-		if self.value:
+		if self.value and self.get_raw_value():
 			print(level*'\t' + key +  " : " + self.get_raw_value())
 
 	def print(self, key, level):
@@ -91,15 +106,26 @@ class Trie:
 
 		return None
 
-
 	def delete(self, key):
 		node = self._get_node(key)
 		if node:
 			node.set_value(None)
 
-	def print(self):
-		self.root_node.print("", 0)
+	def query(self, key_path):
+		keys = key_path.split(".")
+		current_node = self._get_node(keys[0])
+		if not current_node:
+			return None
+
+		for key in keys[1:]:
+			current_node = current_node.get_value().find(key)
+			if not current_node:
+				return None
 			
+		return current_node.get_raw_value()	
+
+	def print(self):
+		self.root_node.print("", 0)		
 
 
 
@@ -107,7 +133,7 @@ if __name__ == '__main__':
 	trie = Trie()
 
 	persons = []
-	persons.append(('a1', '{ "name" : "Mary" ; "address" : { "street" : "Panepistimiou" ; "number" : 12 } }'))
+	persons.append(('a1', '{ "name" : "Mary" ; "address" : { "city" : {"street": "amplianis"} ; "number" : 12 } }'))
 	persons.append(('b2', '{ "name" : "John" ; "age" : 22 }' ))
 	persons.append(('a3', '{ "height" : 1.75 ; "profession" : "student" }'))
 	persons.append(('d4e',  "{}"))
@@ -117,14 +143,14 @@ if __name__ == '__main__':
 
 	trie.print()
 
-	print(trie.get("a1"))
-	print(trie.get("b2"))
-	print(trie.get("a3"))
-	print(trie.get("d4e"))
-	print(trie.get("kkk"))
+	print("a1 ->", trie.get("a1"))
+	print("b2 ->", trie.get("b2"))
+	print("a3 ->", trie.get("a3"))
+	print("d4e ->", trie.get("d4e"))
+	print("kkk ->", trie.get("kkk"))
 	print("\n\n")
 
-	trie.delete("a1")
+	trie.delete("a5")
 	trie.delete("b2")
 	trie.delete("a4")
 
@@ -133,3 +159,6 @@ if __name__ == '__main__':
 	print(trie.get("a3"))
 	print(trie.get("d4e"))
 
+	print("\n\n\nquery:")
+	print(trie.query("a3.profession"))
+	print(trie.query("a2"))
