@@ -7,32 +7,47 @@ import arguments as args
 MAX_MESSAGE_SIZE = 2048
 
 def handle_PUT_request(conn, request_data):
+	conn.sendall(b'OK1')
 
-	conn.sendall(b'OK')
+def handle_GET_request(conn, request_data):
+	conn.sendall(b'OK2')
+
+def handle_DELETE_request(conn, request_data):
+	conn.sendall(b'OK3')
+
+def handle_QUERY_request(conn, request_data):
+	conn.sendall(b'OK4')
 
 def handle_request(conn, request):
 	request_name = request.split(" ")[0]
 	request_data = request.split(" ")[1]
+	print(request_name)
+	print(request_data)
 	if request_name == "PUT":
 		handle_PUT_request(conn, request_data)
 	elif request_name == "GET":
-		x = 1 + 1
+		handle_GET_request(conn, request_data)
 	elif request_name == "DELETE":
-		x = 2 + 2
+		handle_DELETE_request(conn, request_data)
 	elif request_name == "QUERY":
-		x = 3 + 3
+		handle_QUERY_request(conn, request_data)
 	else:
 		print("unkown command...")
+
+def bytes_to_string(data):
+	return data.decode()
 
 def handle_client(conn, addr):
 	print('Connected by', addr)
 
-	request = str(conn.recv(MAX_MESSAGE_SIZE))
+	request = conn.recv(MAX_MESSAGE_SIZE)
 	if not request:
 		return
 
+	request = bytes_to_string(request)
 	print(request)
-	handle_request(conn, request)
+
+	handle_request(conn, str(request))
 
 def run_server(ip, port):
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

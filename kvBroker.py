@@ -5,15 +5,15 @@ import kv_random as rvr
 import arguments as args
 import servers
 
-k_servers = 1
+k_servers = 1 # TODO: REMOVE THIS
 
-def as_bytes(data):
+def string_to_bytes(data):
 	return bytes(data, "ascii")
 
 def send_recv_data_to_server(server, data):
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		s.connect((server.get_ip(), server.get_port()))
-		s.sendall(as_bytes(data))
+		s.sendall(string_to_bytes(data))
 		received_data = s.recv(1024)
 
 	return received_data
@@ -33,22 +33,27 @@ def is_valid(response):
 def send_data_to_k_servers(k_servers, data):
 	for server in k_servers:
 		response = send_recv_data_to_server(server, data)
-		if not is_valid(response):
-			print("response was valid!!")
+		print(response)
+		if is_valid(response):
+			print("Response was valid!!")
+		else:
+			print("Response was not valid.")
 
 def index_data_to_servers(servers, data_file, kReplication):
 	rows = get_data(data_file)
 	for row in rows:
-		# k_servers = servers.get_k_random_servers(kReplication)
+		# k_servers = servers.get_k_random_servers(kReplication) # TODO: UNCOMMENT THIS
 		send_data_to_k_servers(k_servers, "PUT " + row)
 
 def is_server_up(ip, port):
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	result = sock.connect_ex((ip, port))
-	if result == 0:
-		return True
-	else:
+	try:
+		sock.connect((ip, port))
+	except:
 		return False
+	finally:
+		sock.close()
+		return True
 
 def are_k_server_down(servers, kReplication):
 	num_of_down_servers = 0
@@ -67,8 +72,8 @@ def handle_GET_command(command, servers, kReplication):
 			"the correct output.")
 		return
 	
-	# k_servers = servers.get_k_random_servers(kReplication)
-	# send_data_to_k_servers(k_servers, command)
+	# k_servers = servers.get_k_random_servers(kReplication) # TODO: UNCOMMENT THIS
+	send_data_to_k_servers(k_servers, command) # TODO: UNCOMMENT THIS
 
 def handle_user_input(user_input, servers, kReplication):
 	command_name = user_input.split(" ")[0]
@@ -90,10 +95,10 @@ def handle_user_inputs(servers, kReplication):
 if __name__ == "__main__":
 	args = args.get_args(sys.argv[0], sys.argv[1:])
 
-	k_servers =	[servers.Server(args.ip, args.port)]
+	k_servers =	[servers.Server(args.ip, args.port)] # TODO: REMOVE THIS
 
-	servers = servers.get_servers(args.serverFile)
+	servers = servers.get_servers(args.serverFile) 
 
 	# index_data_to_servers(servers, args.dataToIndex, args.kFactor)
 
-	handle_user_inputs(k_servers, args.kFactor)
+	handle_user_inputs(k_servers, args.kFactor) # TODO: CHANGE k_server to servers
