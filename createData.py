@@ -9,7 +9,7 @@ def get_random_value(args, keys, data_type, depth):
 	elif data_type == "float":
 		return str(kvr.get_random_float())
 	elif data_type == "string":
-		return kvr.get_random_string(args.length)
+		return "\"" + kvr.get_random_string(args.length) + "\""
 	elif data_type == "KV":
 		return get_random_pairs(args, keys, depth - 1)
 
@@ -57,8 +57,11 @@ def get_random_lines(args):
 	lines = ""
 	for i in range(args.nlines):
 		lines += get_top_key(i) + " : " + \
-			get_random_pairs(args, keys, args.depth) + "\n"
-	
+			get_random_pairs(args, keys, args.depth)
+
+		if i != args.nlines - 1:
+			lines += "\n"
+
 	return lines
 
 

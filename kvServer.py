@@ -3,26 +3,61 @@ import socket
 from random import choice
 import kv_random as kvr
 import arguments as args
+import trie
 
 MAX_MESSAGE_SIZE = 2048
 
-def handle_PUT_request(conn, request_data):
-	conn.sendall(b'OK1')
+trie = trie.Trie()
 
-def handle_GET_request(conn, request_data):
-	conn.sendall(b'OK2')
+def string_to_bytes(data):
+	return bytes(data, "ascii")
+
+def parse_PUT_request_data(request):
+	request = "".join(request.split())
+
+	i = request.index(":")
+	key, value = request[ : i], request[i+1 : ]
+
+	return key.replace("\"", ""), value
+
+def handle_PUT_request(conn, request_data):
+	key, value = parse_PUT_request_data(request_data)
+	trie.put(key, value)
+
+	conn.sendall(b'OK')
+
+def handle_GET_request(conn, key):
+	response = trie.get(key)
+	if not response:
+		response = "NOT FOUND"
+	else:
+		response = key + " : " + response
+
+	conn.sendall(string_to_bytes(response))
 
 def handle_DELETE_request(conn, request_data):
-	conn.sendall(b'OK3')
+	request_data = request_data.replace("\"", "")
 
-def handle_QUERY_request(conn, request_data):
-	conn.sendall(b'OK4')
+	trie.delete(request_data)
+
+	conn.sendall(b'OK')
+
+def handle_QUERY_request(conn, key_path):
+	response = trie.query(key_path)
+	if not response:
+		response = "NOT FOUND"
+	else:
+		response = key_path + " : " + response
+
+	conn.sendall(string_to_bytes(response))
+
+def parse_request(request):
+	i = request.index(" ")
+	return request[ : i], request[i+1 : ]
 
 def handle_request(conn, request):
-	request_name = request.split(" ")[0]
-	request_data = request.split(" ")[1]
-	print(request_name)
-	print(request_data)
+	request_name, request_data = parse_request(request)
+
 	if request_name == "PUT":
 		handle_PUT_request(conn, request_data)
 	elif request_name == "GET":
@@ -62,5 +97,7 @@ def run_server(ip, port):
 
 if __name__ == "__main__":
 	args = args.get_args(sys.argv[0], sys.argv[1:])
+
+	# res = parse_request('"a1"\n :\t{ "name" : "Mary" ; "address" : { "city" : {"street": "amplianis"} ; "number" : 12 } }')
 
 	run_server(args.ip, args.port)

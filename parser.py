@@ -21,11 +21,6 @@ def JSON_to_simpleKV(data):
 	data = data.replace(",", ";")
 	data = data.replace("\'", "\"")
 
-	# if type(value) != str:
-	# 	value = str(value)
-	# else:
-	# 	value = "\"" + value + "\""
-
 	return data
 
 def parse_value(value):
