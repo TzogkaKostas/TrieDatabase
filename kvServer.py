@@ -32,7 +32,7 @@ def handle_request(conn, request):
 	elif request_name == "QUERY":
 		handle_QUERY_request(conn, request_data)
 	else:
-		print("unkown command...")
+		print("unknown command...")
 
 def bytes_to_string(data):
 	return data.decode()
