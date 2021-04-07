@@ -52,13 +52,19 @@ class TrieNode:
 		return False
 
 	def get_raw_value(self):
+		if not self.value:
+			return None
+
 		return self.value.get_raw_value()
 
 	def get_value(self):
 		return self.value
 
-	def set_value(self, value):
+	def set_raw_value(self, value):
 		self.value = Value(value)
+
+	def set_value(self, value):
+		self.value = value
 
 	def get_child_nodes(self):
 		return self.child_nodes
@@ -86,7 +92,7 @@ class Trie:
 				current_node.set_child_node(char)
 			current_node = current_node.get_child_node(char)
 
-		current_node.set_value(value)
+		current_node.set_raw_value(value)
 
 	def _get_node(self, key):
 		current_node = self.root_node
@@ -109,7 +115,12 @@ class Trie:
 	def delete(self, key):
 		node = self._get_node(key)
 		if node:
-			node.set_value(None)
+			value = node.get_value()
+			if value:
+				node.set_value(None)
+				return value
+		
+		return None
 
 	def query(self, key_path):
 		keys = key_path.split(".")

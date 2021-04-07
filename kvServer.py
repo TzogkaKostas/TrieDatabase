@@ -38,9 +38,13 @@ def handle_GET_request(conn, key):
 def handle_DELETE_request(conn, request_data):
 	request_data = request_data.replace("\"", "")
 
-	trie.delete(request_data)
+	response = trie.delete(request_data)
+	if not response:
+		response = "NOT FOUND"
+	else:
+		response = "OK"
 
-	conn.sendall(b'OK')
+	conn.sendall(string_to_bytes(response))
 
 def handle_QUERY_request(conn, key_path):
 	response = trie.query(key_path)

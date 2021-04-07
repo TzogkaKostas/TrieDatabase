@@ -5,6 +5,7 @@ import socket
 import kv_random as rvr
 import arguments as args
 import servers
+import readline
 
 MAX_MESSAGE_SIZE = 1024*1000
 
