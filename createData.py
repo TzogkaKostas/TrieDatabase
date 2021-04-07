@@ -3,6 +3,8 @@ from random import choice
 import kv_random as kvr
 import arguments as args
 
+chosen_keys = []
+
 def get_random_value(args, keys, data_type, depth):
 	if data_type == "int":
 		return str(kvr.get_random_int())
@@ -13,15 +15,31 @@ def get_random_value(args, keys, data_type, depth):
 	elif data_type == "KV":
 		return get_random_pairs(args, keys, depth - 1)
 
+
+def get_available_keys(keys, depth):
+	if depth == 0:
+		return [(key, data_type) for (key, data_type) in keys if data_type != "KV"]
+
+	return keys
+
+
 def get_random_key(keys, depth):
-	(key, data_type) = choice(keys)
-	while depth == 0 and data_type == "KV":
-		(key, data_type) = choice(keys)
+	available_keys = get_available_keys(keys, depth)
+	if available_keys == []:
+		return (None, None)
+
+	(key, data_type) = choice(available_keys)
+
+	keys.remove((key, data_type))
 
 	return (key, data_type)
 
 def get_random_pair(args, keys, depth):
 	(key, data_type) = get_random_key(keys, depth)
+
+	if key == None:
+		return ""
+
 	return "\"" + key + "\" : " + get_random_value(args, keys, data_type, depth)
 
 def read_keys_from_file(keyfile):
@@ -38,15 +56,19 @@ def select_random_num_of_keys(mkeys):
 	return choice(range(0, mkeys + 1))
 
 def get_random_pairs(args, keys, depth):
-	values = "{"
+	pairs = "{"
 	num_of_keys = select_random_num_of_keys(args.mkeys)
 
-	for i in range(num_of_keys):
-		values += get_random_pair(args, keys, depth)
-		if i != num_of_keys - 1:
-			values += " ; "
+	if num_of_keys > 0:
+		pairs += get_random_pair(args, keys, depth)
 
-	return values + "}"
+	for i in range(num_of_keys - 1):
+		pair = get_random_pair(args, keys, depth)
+
+		if pair != "":
+			pairs +=  " ; " + pair
+
+	return pairs + "}"
 
 def get_top_key(i):
 	return "\"key_" + str(i) + "\""
@@ -56,6 +78,7 @@ def get_random_lines(args):
 
 	lines = ""
 	for i in range(args.nlines):
+		chosen_keys = []
 		lines += get_top_key(i) + " : " + \
 			get_random_pairs(args, keys, args.depth)
 

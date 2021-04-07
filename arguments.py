@@ -67,10 +67,9 @@ def get_args3(args):
 		"ports that will be listening for queries and indexing commands.",
 		required=True)
 
-	parser.add_argument("-a", "--ip", help="Server IP", required=True)
+	parser.add_argument("-a", "--ip", help="Server IP")
 
-	parser.add_argument("-p", "--port", help="Server Port ", type=int,
-		required=True)
+	parser.add_argument("-p", "--port", help="Server Port ", type=int)
 
 	parser.add_argument("-i", "--dataToIndex",
 		help="is a file containing data that was output from the previous "
