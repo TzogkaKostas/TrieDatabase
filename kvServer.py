@@ -5,7 +5,7 @@ import kv_random as kvr
 import arguments as args
 import trie
 
-MAX_MESSAGE_SIZE = 2048
+MAX_MESSAGE_SIZE = 1024*1000
 
 trie = trie.Trie()
 
