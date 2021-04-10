@@ -47,7 +47,12 @@ def index_data_to_servers(servers, data_file, kReplication):
 	rows = get_data(data_file)
 	for row in rows:
 		if row:
-			k_servers = servers.get_k_random_servers(kReplication) # TODO: UNCOMMENT THIS
+			k_servers = servers.get_k_random_up_servers(kReplication) # TODO: UNCOMMENT THIS
+			if k_servers == []:
+				print("There are not enough servers UP for the data " +
+						str(kReplication) + "-replication...")
+				exit()
+
 			send_data_to_k_servers(k_servers, "PUT " + row)
 
 def is_server_up(ip, port):
@@ -72,13 +77,25 @@ def are_k_server_down(servers, k):
 	
 	return False
 
-def handle_GET_or_QUERY_command(command, servers, kReplication):
-	if are_k_server_down(servers.get_servers(), kReplication) == True:
-		print(kReplication, "or more servers are down and therefore the correct"
-		" output cannot be guaranteed.")
-		return
+def are_k_server_up(servers, k):
+	num_of_up_servers = 0
+	for server in servers:
+		if is_server_up(server.get_ip(), server.get_port()) == True:
+			num_of_up_servers += 1
+
+		print(num_of_up_servers, k)
+
+		if num_of_up_servers >= k:
+			return True
 	
-	k_servers = servers.get_k_random_servers(kReplication) # TODO: UNCOMMENT THIS
+	return False
+
+def handle_GET_or_QUERY_command(command, servers, kReplication):
+	k_servers = servers.get_up_servers() # TODO: UNCOMMENT THIS
+	if servers.get_total() - len(k_servers) >= kReplication:
+		print("WARNING:", kReplication, "or more servers are down and "
+			"therefore the correct output cannot be guaranteed.")
+	
 	send_data_to_k_servers(k_servers, command)
 
 def handle_DELETE_command(command, servers):
@@ -112,6 +129,6 @@ if __name__ == "__main__":
 
 	servers = servers.get_servers(args.serverFile) 
 
-	# index_data_to_servers(servers, args.dataToIndex, args.kFactor)
+	index_data_to_servers(servers, args.dataToIndex, args.kFactor)
 
 	handle_user_inputs(servers, args.kFactor) # TODO: CHANGE k_server to servers

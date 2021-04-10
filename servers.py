@@ -1,4 +1,5 @@
 from random import sample
+from kvBroker import is_server_up
 
 class Server:
 	def __init__(self, ip, port):
@@ -24,8 +25,34 @@ class Servers:
 	def get_k_random_servers(self, k):
 		return sample(self.servers, k)
 
+	def get_up_servers(self):
+		k_random_up_servers = []
+		for server in self.servers:
+			if is_server_up(server.get_ip(), server.get_port()) == True:
+				k_random_up_servers.append(
+						Server(server.get_ip(), server.get_port()))
+		
+		return k_random_up_servers
+
+	def get_k_random_up_servers(self, k):
+		k_random_up_servers = []
+		num_of_up_servers = 0
+		for server in self.servers:
+			if is_server_up(server.get_ip(), server.get_port()) == True:
+				k_random_up_servers.append(
+						Server(server.get_ip(), server.get_port()))
+				num_of_up_servers += 1
+
+			if num_of_up_servers >= k:
+				return k_random_up_servers
+		
+		return []		
+
 	def get_servers(self):
 		return self.servers
+
+	def get_total(self):
+		return len(self.servers)
 
 	def print_servers(self):
 		for server in self.servers:
