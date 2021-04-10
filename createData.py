@@ -3,7 +3,6 @@ from random import choice
 import kv_random as kvr
 import arguments as args
 
-chosen_keys = []
 
 def get_random_value(args, keys, data_type, depth):
 	if data_type == "int":
@@ -52,17 +51,17 @@ def read_keys_from_file(keyfile):
 
 	return keys
 
-def select_random_num_of_keys(mkeys):
+def select_random_num_of_subkeys(mkeys):
 	return choice(range(0, mkeys + 1))
 
 def get_random_pairs(args, keys, depth):
 	pairs = "{"
-	num_of_keys = select_random_num_of_keys(args.mkeys)
+	num_of_subkeys = select_random_num_of_subkeys(args.mkeys)
 
-	if num_of_keys > 0:
+	if num_of_subkeys > 0:
 		pairs += get_random_pair(args, keys, depth)
 
-	for i in range(num_of_keys - 1):
+	for i in range(num_of_subkeys - 1):
 		pair = get_random_pair(args, keys, depth)
 
 		if pair != "":
@@ -78,9 +77,9 @@ def get_random_lines(args):
 
 	lines = ""
 	for i in range(args.nlines):
-		chosen_keys = []
+		temp_keys = keys.copy()
 		lines += get_top_key(i) + " : " + \
-			get_random_pairs(args, keys, args.depth)
+			get_random_pairs(args, temp_keys, args.depth)
 
 		if i != args.nlines - 1:
 			lines += "\n"

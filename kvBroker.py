@@ -9,8 +9,6 @@ import readline
 
 MAX_MESSAGE_SIZE = 1024*1000
 
-k_servers = 1 # TODO: REMOVE THIS
-
 def string_to_bytes(data):
 	return bytes(data, "ascii")
 
@@ -47,7 +45,7 @@ def index_data_to_servers(servers, data_file, kReplication):
 	rows = get_data(data_file)
 	for row in rows:
 		if row:
-			k_servers = servers.get_k_random_up_servers(kReplication) # TODO: UNCOMMENT THIS
+			k_servers = servers.get_k_random_up_servers(kReplication)
 			if k_servers == []:
 				print("There are not enough servers UP for the data " +
 						str(kReplication) + "-replication...")
@@ -103,7 +101,7 @@ def handle_DELETE_command(command, servers):
 		print("At least 1 server is down. DELETE cannot be reliably executed.")
 		return
 
-	send_data_to_k_servers(servers.get_servers(), command) # TODO: REPLACE k_servers with servers (ALL)
+	send_data_to_k_servers(servers.get_servers(), command)
 
 def handle_user_input(user_input, servers, kReplication):
 	command_name = user_input.split(" ")[0]
@@ -125,10 +123,8 @@ def handle_user_inputs(servers, kReplication):
 if __name__ == "__main__":
 	args = args.get_args(sys.argv[0], sys.argv[1:])
 
-	# k_servers = [servers.Server(args.ip, args.port)] # TODO: REMOVE THIS
-
 	servers = servers.get_servers(args.serverFile) 
 
 	index_data_to_servers(servers, args.dataToIndex, args.kFactor)
 
-	handle_user_inputs(servers, args.kFactor) # TODO: CHANGE k_server to servers
+	handle_user_inputs(servers, args.kFactor)

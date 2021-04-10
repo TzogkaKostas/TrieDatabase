@@ -37,7 +37,7 @@ class Servers:
 	def get_k_random_up_servers(self, k):
 		k_random_up_servers = []
 		num_of_up_servers = 0
-		for server in self.servers:
+		for server in sample(self.servers, len(self.servers)):
 			if is_server_up(server.get_ip(), server.get_port()) == True:
 				k_random_up_servers.append(
 						Server(server.get_ip(), server.get_port()))
