@@ -11,6 +11,9 @@ class Server:
 	def get_port(self):
 		return self.port
 
+	def to_string(self):
+		return self.ip, self.port
+
 class Servers:
 	def __init__(self):
 		self.servers = []
