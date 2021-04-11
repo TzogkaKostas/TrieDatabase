@@ -35,11 +35,29 @@ def is_valid(response):
 	else:
 		return False
 
-def send_data_to_k_servers(k_servers, data):
+def send_PUT_command_to_k_servers(k_servers, data):
 	for server in k_servers:
 		print(server.to_string(), "<--", data)
 		response = send_recv_data_to_server(server, data)
 		print(bytes_to_string(response))
+
+def send_GET_or_QUERY_command_to_k_servers(k_servers, data):
+	for server in k_servers:
+		# print(server.to_string(), "<--", data)
+		response = send_recv_data_to_server(server, data)
+		if response != b"NOT FOUND":
+			print(bytes_to_string(response))
+			return
+
+def send_DELETE_command_to_k_servers(k_servers, data):
+	num_of_deleted = 0
+	for server in k_servers:
+		# print(server.to_string(), "<--", data)
+		response = send_recv_data_to_server(server, data)
+		if response == b"OK":
+			num_of_deleted += 1
+	
+	return num_of_deleted
 
 def index_data_to_servers(servers, data_file, kReplication):
 	rows = get_data(data_file)
@@ -51,7 +69,7 @@ def index_data_to_servers(servers, data_file, kReplication):
 						str(kReplication) + "-replication...")
 				exit()
 
-			send_data_to_k_servers(k_servers, "PUT " + row)
+			send_PUT_command_to_k_servers(k_servers, "PUT " + row)
 
 def is_server_up(ip, port):
 	response = True
@@ -94,25 +112,33 @@ def handle_GET_or_QUERY_command(command, servers, kReplication):
 		print("WARNING:", kReplication, "or more servers are down and "
 			"therefore the correct output cannot be guaranteed.")
 	
-	send_data_to_k_servers(k_servers, command)
+	send_GET_or_QUERY_command_to_k_servers(k_servers, command)
 
-def handle_DELETE_command(command, servers):
+def handle_DELETE_command(command, servers, kReplication):
 	if are_k_server_down(servers.get_servers(), 1) == True:
 		print("At least 1 server is down. DELETE cannot be reliably executed.")
 		return
 
-	send_data_to_k_servers(servers.get_servers(), command)
+	deleted = send_DELETE_command_to_k_servers(servers.get_servers(), command)
+	if deleted == kReplication:
+		print("OK")
+	elif deleted == 0:
+		print("NOT FOUND")
+	elif deleted < kReplication:
+		print("Found and deleted only", deleted, "times...")
+	elif deleted > kReplication:
+		print("Found and deleted", deleted, "times...")
 
 def handle_user_input(user_input, servers, kReplication):
 	command_name = user_input.split(" ")[0]
 	if command_name == "GET" or  command_name == "QUERY":
 		handle_GET_or_QUERY_command(user_input, servers, kReplication)
 	elif command_name == "DELETE":
-		handle_DELETE_command(user_input, servers)
+		handle_DELETE_command(user_input, servers, kReplication)
 	elif command_name == "clear":
 		os.system("clear")
 	else:
-		print("unkown command...")
+		print("unknown command...")
 
 def handle_user_inputs(servers, kReplication):
 	while True:
