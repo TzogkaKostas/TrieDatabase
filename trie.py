@@ -137,39 +137,3 @@ class Trie:
 
 	def print(self):
 		self.root_node.print("", 0)		
-
-
-
-if __name__ == '__main__':
-	trie = Trie()
-
-	persons = []
-	persons.append(('a1', '{ "name" : "Mary" ; "address" : { "city" : {"street": "amplianis"} ; "number" : 12 } }'))
-	persons.append(('b2', '{ "name" : "John" ; "age" : 22 }' ))
-	persons.append(('a3', '{ "height" : 1.75 ; "profession" : "student" }'))
-	persons.append(('d4e',  "{}"))
-
-	for person in persons:
-		trie.put(person[0], person[1])
-
-	trie.print()
-
-	print("a1 ->", trie.get("a1"))
-	print("b2 ->", trie.get("b2"))
-	print("a3 ->", trie.get("a3"))
-	print("d4e ->", trie.get("d4e"))
-	print("kkk ->", trie.get("kkk"))
-	print("\n\n")
-
-	trie.delete("a5")
-	trie.delete("b2")
-	trie.delete("a4")
-
-	print(trie.get("a2"))
-	print(trie.get("b2"))
-	print(trie.get("a3"))
-	print(trie.get("d4e"))
-
-	print("\n\n\nquery:")
-	print(trie.query("a3.profession"))
-	print(trie.query("a2"))

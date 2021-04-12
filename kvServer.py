@@ -28,7 +28,7 @@ def handle_PUT_request(conn, request_data):
 
 def handle_GET_request(conn, key):
 	response = trie.get(key)
-	if not response:
+	if response == None:
 		response = "NOT FOUND"
 	else:
 		response = key + " : " + response
@@ -39,7 +39,7 @@ def handle_DELETE_request(conn, request_data):
 	request_data = request_data.replace("\"", "")
 
 	response = trie.delete(request_data)
-	if not response:
+	if response == None:
 		response = "NOT FOUND"
 	else:
 		response = "OK"
@@ -48,7 +48,7 @@ def handle_DELETE_request(conn, request_data):
 
 def handle_QUERY_request(conn, key_path):
 	response = trie.query(key_path)
-	if not response:
+	if response == None:
 		response = "NOT FOUND"
 	else:
 		response = key_path + " : " + response
@@ -101,7 +101,5 @@ def run_server(ip, port):
 
 if __name__ == "__main__":
 	args = args.get_args(sys.argv[0], sys.argv[1:])
-
-	# res = parse_request('"a1"\n :\t{ "name" : "Mary" ; "address" : { "city" : {"street": "amplianis"} ; "number" : 12 } }')
 
 	run_server(args.ip, args.port)

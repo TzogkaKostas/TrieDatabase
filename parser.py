@@ -1,8 +1,6 @@
 import json
 
 def is_primitive_type(value):
-	# return True
-
 	if value == None:
 		return True
 
@@ -33,12 +31,3 @@ def parse_value(value):
 		pairs.append((key, value))
 
 	return pairs
-
-
-
-# if __name__ == '__main__':
-# 	value = '{ "name" : 1 ; "name2" : "george" ; "name3" :  { "street" : "Panepistimiou"}  }'
-
-# 	pairs = parse_value(value)
-
-# 	print(pairs)

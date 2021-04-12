@@ -43,16 +43,16 @@ def send_PUT_command_to_k_servers(k_servers, data):
 
 def send_GET_or_QUERY_command_to_k_servers(k_servers, data):
 	for server in k_servers:
-		# print(server.to_string(), "<--", data)
 		response = send_recv_data_to_server(server, data)
 		if response != b"NOT FOUND":
 			print(bytes_to_string(response))
 			return
+		
+	print("NOT FOUND")
 
 def send_DELETE_command_to_k_servers(k_servers, data):
 	num_of_deleted = 0
 	for server in k_servers:
-		# print(server.to_string(), "<--", data)
 		response = send_recv_data_to_server(server, data)
 		if response == b"OK":
 			num_of_deleted += 1
@@ -65,7 +65,7 @@ def index_data_to_servers(servers, data_file, kReplication):
 		if row:
 			k_servers = servers.get_k_random_up_servers(kReplication)
 			if k_servers == []:
-				print("There are not enough servers UP for the data " +
+				print("There aren't enough servers UP for the data " +
 						str(kReplication) + "-replication...")
 				exit()
 
@@ -98,8 +98,6 @@ def are_k_server_up(servers, k):
 	for server in servers:
 		if is_server_up(server.get_ip(), server.get_port()) == True:
 			num_of_up_servers += 1
-
-		print(num_of_up_servers, k)
 
 		if num_of_up_servers >= k:
 			return True
