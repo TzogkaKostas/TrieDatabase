@@ -15,16 +15,42 @@ def string_to_bytes(data):
 def parse_PUT_request_data(request):
 	request = "".join(request.split())
 
-	i = request.index(":")
+	try:
+		i = request.index(":")
+	except ValueError:
+		return None, None
+
 	key, value = request[ : i], request[i+1 : ]
 
 	return key.replace("\"", ""), value
 
+def is_data_valid(request_data):
+	for c in "".join(request_data.split()):
+		if not c.isalnum() and not c in '{}:;."':
+			print(c)
+			return False
+
+	return True
+
 def handle_PUT_request(conn, request_data):
+	if not is_data_valid(request_data):
+		print("Invalid request data")
+		conn.sendall(b'ERROR')
+		return
+
 	key, value = parse_PUT_request_data(request_data)
-	trie.put(key, value)
+	if key == None or value == None:
+		print("Invalid request data 2")
+		conn.sendall(b'ERROR')
+		return
+
+	if trie.put(key, value) == -1:
+		print("ERROR IN PUT")
+		conn.sendall(b'ERROR')
+		return
 
 	conn.sendall(b'OK')
+
 
 def handle_GET_request(conn, key):
 	response = trie.get(key)

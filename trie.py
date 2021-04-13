@@ -5,18 +5,26 @@ class Value:
 		self.raw_value = value
 		self.trie = None
 
-		if not parser.is_primitive_type(value):
-			self.trie = Trie()
-			self.build(value)
-
 	def get_raw_value(self):
 		return self.raw_value
 
+	def set_value(self, value):
+		if not parser.is_primitive_type(value):
+			self.trie = Trie()
+			if self.build(value) == -1:
+				return -1
+		
+		return 0
+
 	def build(self, value):
 		pairs = parser.parse_value(value)
+		if pairs == -1:
+			return -1
 
 		for (key, value) in pairs:
 			self.trie.put(key, value)
+
+		return 0
 
 	def find(self, key):
 		if not self.trie:
@@ -58,10 +66,17 @@ class TrieNode:
 		return self.value.get_raw_value()
 
 	def get_value(self):
+		if not self.value:
+			return None
+
 		return self.value
 
 	def set_raw_value(self, value):
 		self.value = Value(value)
+		if self.value.set_value(value) == -1:
+			return -1
+		
+		return 0
 
 	def set_value(self, value):
 		self.value = value
@@ -92,7 +107,10 @@ class Trie:
 				current_node.set_child_node(char)
 			current_node = current_node.get_child_node(char)
 
-		current_node.set_raw_value(value)
+		if current_node.set_raw_value(value) == -1:
+			return -1
+
+		return 0
 
 	def _get_node(self, key):
 		current_node = self.root_node
@@ -129,7 +147,11 @@ class Trie:
 			return None
 
 		for key in keys[1:]:
-			current_node = current_node.get_value().find(key)
+			current_value = current_node.get_value()
+			if not current_value:
+				return None
+				
+			current_node = current_value.find(key)
 			if not current_node:
 				return None
 			

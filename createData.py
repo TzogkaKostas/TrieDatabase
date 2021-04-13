@@ -70,7 +70,7 @@ def get_random_pairs(args, keys, depth):
 	return pairs + "}"
 
 def get_top_key(i):
-	return "\"key_" + str(i) + "\""
+	return "\"key" + str(i) + "\""
 
 def get_random_lines(args):
 	keys = read_keys_from_file(args.keyfile)

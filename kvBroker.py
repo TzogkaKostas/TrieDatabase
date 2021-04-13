@@ -39,7 +39,10 @@ def send_PUT_command_to_k_servers(k_servers, data):
 	for server in k_servers:
 		print(server.to_string(), "<--", data)
 		response = send_recv_data_to_server(server, data)
-		print(bytes_to_string(response))
+		if response:
+			print(bytes_to_string(response))
+		else:
+			print("ERROR")
 
 def send_GET_or_QUERY_command_to_k_servers(k_servers, data):
 	for server in k_servers:
