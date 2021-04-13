@@ -33,3 +33,10 @@ instead of GET "key_55".
 
 usage example: python3 kvServer.py -a ip_address -p port
 
+# Trie
+
+This module contains 3 classes. Trie, TrieNode and Value. Trie is the 
+representation of the Tree data structure. TrieNode represents each node of
+the Tree and could contain a Value or not. Each Value contains a Trie. This
+nested inclusion represents the nested Key-Value pairs. Hence, only the Trie
+data structure is used for the data storage.
